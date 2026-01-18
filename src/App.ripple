@@ -1,0 +1,65 @@
+import { track } from 'ripple';
+
+export component App() {
+	let count = track(0);
+
+	<div class="app">
+		<div class="min-h-screen flex flex-row bg-size-[20px_20px] sm:bg-size-[40px_40px] bg-[linear-gradient(to_right,#e4e4e7_1px,transparent_1px),linear-gradient(to_bottom,#e4e4e7_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#262626_1px,transparent_1px),linear-gradient(to_bottom,#262626_1px,transparent_1px)]">
+			<Sidebar/>
+			<div class="flex-1 flex flex-col">
+				<MessageBox messages={[`Hello world`, `Hello computer`, 'beep boop beep boop', 'research en development is fk vaag']}/>
+				<Input/>
+			</div>
+		</div>
+	</div>
+
+	<style>
+		.app {
+			min-height: 100vh;
+			background: radial-gradient(circle at top left, #131313, #0d0e17 85%);
+			color: #f2f4f8;
+			font-family: 'Inter', 'Segoe UI', sans-serif;
+			letter-spacing: 0.25px;
+			margin: 0;
+		}
+	</style>
+}
+
+component Sidebar() {
+	<div id="sidebar" class="w-[240px] m-[20px] mr-0 bg-[#1f2028] border-[#3f98ff]/20 border-2 flex flex-col items-center relative">
+		<Corners color="bg-[#3f98ff]"/>
+		<img src="/src/assets/ripple-logo-horizontal.png" alt="Logo" class="m-[20px] w-[200px]"/>
+		<span>{"Chat"}</span>
+	</div>
+}
+
+component MessageBox({ messages }: { messages: string[] }) {
+	<div class="flex-grow p-[40px] box-border flex flex-col gap-[20px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#3f98ff]/40 scrollbar-track-transparent">
+		for (const message of messages; index i) {
+			<div class={"p-[20px] box-border h-content bg-[#2a2b33] border-white/10 border-2 text-[#f2f4f8] relative " + (i % 2 === 0 ? "self-start" : "self-end")}>
+				<Corners color={"bg-white/80"}/>
+				{message}
+			</div>
+		}
+	</div>
+}
+
+component Input() {
+	<div class="h-16 m-[30px] mt-0 bg-[#1f2028] border-white/10 border-2 box-border text-[#f2f4f8] relative">
+		<Corners color={"bg-white/50"}/>
+		<input class="w-full h-full bg-transparent border-none outline-none text-[#f2f4f8] px-4" type="text" contenteditable="true" placeholder="Type your message here..."/>
+	</div>
+}
+
+component Corners({color = 'bg-white/80'}: {color?: string}) {
+	<span aria-hidden="true" class="pointer-events-none absolute inset-0 z-10 select-none">
+		<span class={`absolute left-[-2px] top-[-2px] h-0.5 w-4 ${color}`}></span>
+		<span class={`absolute left-[-2px] top-[-2px] h-4 w-0.5 ${color}`}></span>
+		<span class={`absolute right-[-2px] top-[-2px] h-0.5 w-4 ${color}`}></span>
+		<span class={`absolute right-[-2px] top-[-2px] h-4 w-0.5 ${color}`}></span>
+		<span class={`absolute left-[-2px] bottom-[-2px] h-0.5 w-4 ${color}`}></span>
+		<span class={`absolute left-[-2px] bottom-[-2px] h-4 w-0.5 ${color}`}></span>
+		<span class={`absolute right-[-2px] bottom-[-2px] h-0.5 w-4 ${color}`}></span>
+		<span class={`absolute right-[-2px] bottom-[-2px] h-4 w-0.5 ${color}`}></span>
+	</span>
+}
