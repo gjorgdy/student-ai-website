@@ -5,7 +5,7 @@ export component CreateContextPage() {
     <div class="flex-1 flex flex-col justify-center items-center text-center p-4">
         <Panel color="bg-[#ff5733]" class="w-content h-content max-h-9/10 max-w-[1200px] bg-[#1f2028]/50 backdrop-blur-[5px] border-[#ff5733]/20 border-2 flex content-start flex-col text-start">
             <div class="w-full h-full overflow-y-auto flex flex-col p-8 gap-2">
-                <h1 class="text-4xl font-bold">{"Nieuwe context aanmaken"}</h1>
+                <h1 class="text-4xl font-bold mb-4">{"Nieuwe context aanmaken"}</h1>
 
                 <div> 
                     <label for="contextType" class="text-white/50 mb-2">{"Selecteer type context"}</label>
@@ -37,7 +37,7 @@ export component CreateContextPage() {
                         </Link>
                     </span>
                     <span class="text-white/50 mt-4">
-                        <Link href="/control" class="px-4 py-2 bg-[#2a2b33] text-white hover:bg-[#e04e2a] cursor-pointer">
+                        <Link href="/control" class="px-4 py-2 bg-[#2a2b33] text-white hover:bg-[#282930] cursor-pointer">
                             {"Annuleren"}
                         </Link>
                     </span>
