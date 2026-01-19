@@ -31,7 +31,8 @@
     "@tailwindcss/vite": "^4.1.12"
   },
   "dependencies": {
-    "ripple": "latest"
+    "ripple": "latest",
+    "ripple-router": "^1.0.1"
   },
   "packageManager": "bun@1.3.0"
 }

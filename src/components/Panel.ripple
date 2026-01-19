@@ -1,8 +1,8 @@
 import type { Component } from 'ripple';
 
-export component Panel(props: { children: Component, color: string, class: string }) {
+export component Panel(props: { children: Component, color: string, class?: string }) {
 
-    <div class={`${props.class} relative`}>
+    <div {...props} class={`${props.class ?? ""} relative`}>
         <span aria-hidden="true" class="pointer-events-none absolute inset-0 z-10 select-none">
             <span class={`absolute left-[-2px] top-[-2px] h-0.5 w-4 ${props.color}`}></span>
             <span class={`absolute left-[-2px] top-[-2px] h-4 w-0.5 ${props.color}`}></span>
