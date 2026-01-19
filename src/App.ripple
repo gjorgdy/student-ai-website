@@ -1,13 +1,29 @@
-import { track } from 'ripple';
+import { on, tick, effect, TrackedArray, track, type Tracked } from 'ripple';
+import type { Context, Chat, Message } from './types.ts';
+import { demodata } from './demodata';
+import { Panel } from './component/Panel.ripple';
+
+type contexts = TrackedArray<Context>
 
 export component App() {
-	let count = track(0);
+	const contexts: contexts = #[];
+	let selectedChat: Tracked<Chat | null> = track(null);
+	
+	effect(() => {
+		tick().then(() => {
+			for (const context of demodata) {
+				contexts.push({...context, chats: #[...(context.chats ?? [])]});
+			}
+			@selectedChat = (contexts[0].chats ?? [])[0] ?? null;
+			console.log(contexts);
+		});
+	});
 
 	<div class="app">
-		<div class="min-h-screen flex flex-row bg-size-[20px_20px] sm:bg-size-[40px_40px] bg-[linear-gradient(to_right,#e4e4e7_1px,transparent_1px),linear-gradient(to_bottom,#e4e4e7_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#262626_1px,transparent_1px),linear-gradient(to_bottom,#262626_1px,transparent_1px)]">
-			<Sidebar/>
+		<div class="min-h-screen max-h-screen flex flex-row bg-size-[20px_20px] sm:bg-size-[40px_40px] bg-[linear-gradient(to_right,#e4e4e7_1px,transparent_1px),linear-gradient(to_bottom,#e4e4e7_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#262626_1px,transparent_1px),linear-gradient(to_bottom,#262626_1px,transparent_1px)]">
+			<Sidebar contexts={contexts} selectedChat={selectedChat} />
 			<div class="flex-1 flex flex-col">
-				<MessageBox messages={[`Hello world`, `Hello computer`, 'beep boop beep boop', 'research en development is fk vaag']}/>
+				<MessageBox messages={@selectedChat?.messages ?? []}/>
 				<Input/>
 			</div>
 		</div>
@@ -25,41 +41,92 @@ export component App() {
 	</style>
 }
 
-component Sidebar() {
-	<div id="sidebar" class="w-[240px] m-[20px] mr-0 bg-[#1f2028] border-[#3f98ff]/20 border-2 flex flex-col items-center relative">
-		<Corners color="bg-[#3f98ff]"/>
-		<img src="/src/assets/ripple-logo-horizontal.png" alt="Logo" class="m-[20px] w-[200px]"/>
-		<span>{"Chat"}</span>
-	</div>
-}
-
-component MessageBox({ messages }: { messages: string[] }) {
-	<div class="flex-grow p-[40px] box-border flex flex-col gap-[20px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#3f98ff]/40 scrollbar-track-transparent">
-		for (const message of messages; index i) {
-			<div class={"p-[20px] box-border h-content bg-[#2a2b33] border-white/10 border-2 text-[#f2f4f8] relative " + (i % 2 === 0 ? "self-start" : "self-end")}>
-				<Corners color={"bg-white/80"}/>
-				{message}
+component Sidebar({ contexts, selectedChat }: { contexts?: contexts, selectedChat: Tracked<Chat | null> }) {
+	<Panel color="bg-[#ffcb05]" class="w-[280px] m-[20px] mr-0 backdrop-blur-[5px] bg-[#1f2028]/50 border-[#ffcb05]/20 border-2 flex flex-col items-center">
+		<img 
+			src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwindesheim.aattendance.nl%2Fimg%2Fwindesheim_white.png&f=1&nofb=1&ipt=389cefa00ba89d80d6b4200a12ee932f9c055b646ea8fdf741a99f9cbb696749" 
+			alt="Logo" 
+			class="mt-[40px] w-[200px]"
+		/>
+		for (const context of contexts; index i) {
+			<div class="mt-[40px] w-[260px] p-2 gap-2 box-border flex flex-col relative">
+				<span class="flex justify-between items-center font-bold mb-2 w-full">
+					{@context.title}
+					<AddChat color={"text-white/50"} colorHover={"hover:text-[#3f98ff]"} onClick={() => {
+						const newChat: Chat = { title: `Chat ${context.chats.length + 1}`, messages: [{
+								sender: "bot",
+								type: "text",
+								content: "Stel een vraag over " + @context.title.toLowerCase() + "!"
+							}] };
+						context.chats.push(newChat);
+					}}/>
+				</span>
+				for (const chat of context.chats ?? []; index j) {
+					<div class="min-h-[20px] border-1 border-white/5 p-2 box-border cursor-pointer hover:bg-white/10 " onClick={() => @selectedChat = chat}>
+						{chat.title}
+					</div>
+				}
 			</div>
 		}
+	</Panel>
+}
+
+component MessageBox({ messages }: { messages: Message[] }) {
+	let messageBox: Tracked<HTMLElement | undefined> = track();
+	const messageBoxRef = (node) => {
+		@messageBox = node;
+		return () => @messageBox = undefined;
+	};
+
+	effect(() => {
+		const removeListener = on(window, 'load', () => {
+			@messageBox?.scrollTo({
+				top: @messageBox.scrollHeight,
+				behavior: 'smooth',
+			});
+		});
+		tick().then(() => {
+			@messageBox?.scrollTo({
+				top: @messageBox.scrollHeight,
+				behavior: 'smooth',
+			});
+		});
+		return removeListener;
+	});
+
+	<div {ref messageBoxRef} class="flex-grow p-[40px] min-h-0 box-border overflow-scroll scrollbar-thin scrollbar-thumb-[#3f98ff]/40 scrollbar-track-transparent">
+		<div class="flex flex-col gap-[20px]">
+		for (const message of messages; index i) {
+			<Panel color={"bg-white/80"} class={"p-[20px] box-border h-content max-w-[60%] backdrop-blur-[2px] bg-[#2a2b33]/50 border-white/10 border-2 text-[#f2f4f8] " + (message.sender === "user" ? "self-end" : "self-start")}>
+				switch (message.type) {
+					case 'text':
+						<pre class="whitespace-pre-wrap">
+							{message.content}
+						</pre>
+						break;
+					case 'multiple-choice':
+						<span>{message.question}</span>
+						for (const option of message.options; index j) {
+							<div class={"mt-2 p-2 " +  (message.answer === j ? "bg-green-600/30 border-green-600" : (message.wrong_answer === j ? "bg-red-600/30 border-red-600" : "bg-white/5 border-1 border-white/10"))}>
+								{option}
+							</div>
+						}
+						break;
+				}
+			</Panel>
+		}
+		</div>
 	</div>
 }
 
 component Input() {
-	<div class="h-16 m-[30px] mt-0 bg-[#1f2028] border-white/10 border-2 box-border text-[#f2f4f8] relative">
-		<Corners color={"bg-white/50"}/>
+	<Panel color={"bg-white/50"} class="h-16 m-[20px] mt-0 backdrop-blur-[5px] bg-[#1f2028]/90 border-white/10 border-2 box-border text-[#f2f4f8] relative">
 		<input class="w-full h-full bg-transparent border-none outline-none text-[#f2f4f8] px-4" type="text" contenteditable="true" placeholder="Type your message here..."/>
-	</div>
+	</Panel>
 }
 
-component Corners({color = 'bg-white/80'}: {color?: string}) {
-	<span aria-hidden="true" class="pointer-events-none absolute inset-0 z-10 select-none">
-		<span class={`absolute left-[-2px] top-[-2px] h-0.5 w-4 ${color}`}></span>
-		<span class={`absolute left-[-2px] top-[-2px] h-4 w-0.5 ${color}`}></span>
-		<span class={`absolute right-[-2px] top-[-2px] h-0.5 w-4 ${color}`}></span>
-		<span class={`absolute right-[-2px] top-[-2px] h-4 w-0.5 ${color}`}></span>
-		<span class={`absolute left-[-2px] bottom-[-2px] h-0.5 w-4 ${color}`}></span>
-		<span class={`absolute left-[-2px] bottom-[-2px] h-4 w-0.5 ${color}`}></span>
-		<span class={`absolute right-[-2px] bottom-[-2px] h-0.5 w-4 ${color}`}></span>
-		<span class={`absolute right-[-2px] bottom-[-2px] h-4 w-0.5 ${color}`}></span>
-	</span>
+component AddChat({onClick, color = 'text-white/80', colorHover = 'hover:text-white'}: {onClick: EventListener, color?: string, colorHover?: string}) {
+	<button 
+	class={`${color} self-end text-xl cursor-pointer ${colorHover}`} onClick={onClick}
+	>{"+"}</button>
 }
