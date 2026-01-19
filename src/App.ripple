@@ -2,6 +2,7 @@ import { track } from 'ripple';
 import { ChatPage } from './pages/Chat.ripple';
 import { ControlPage } from './pages/Control.ripple';
 import { CreateContextPage } from './pages/CreateContext.ripple';
+import { StatsPage } from './pages/Stats.ripple';
 import { Router, Route, Link } from 'ripple-router';
 
 export component App() {
@@ -12,6 +13,7 @@ export component App() {
 				<Route path="/" element={ChatPage} />
 				<Route path="/control" element={ControlPage} />
 				<Route path="/create-context" element={CreateContextPage} />
+				<Route path="/stats" element={StatsPage} />
 			</Router>
 		</div>
 	</div>

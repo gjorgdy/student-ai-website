@@ -15,11 +15,19 @@ export component ControlPage() {
                     {"Beheer contexten aan voor je studenten."}
                 </span>
 
-                <span class="text-white/50 mb-8">
-                    <Link href="/create-context" class="px-4 py-2 bg-[#ff5733] text-white hover:bg-[#e04e2a] cursor-pointer">
-                        {"+ Nieuwe Context"}
-                    </Link>
-                </span>
+                <div class="flex flex-row gap-4"> 
+                    <span class="text-white/50 mb-8">
+                        <Link href="/stats" class="px-4 py-2 bg-[#ff5733] text-white hover:bg-[#e04e2a] cursor-pointer">
+                            {"Studenten Scores"}
+                        </Link>
+                    </span>
+
+                    <span class="text-white/50 mb-8">
+                        <Link href="/create-context" class="px-4 py-2 bg-[#ff5733] text-white hover:bg-[#e04e2a] cursor-pointer">
+                            {"+ Nieuwe Context"}
+                        </Link>
+                    </span>
+                </div>
 
                 <div class="flex flex-col gap-8">
                     <h2 class="text-lg font-bold">{"Bestaande Contexten"}</h2>
