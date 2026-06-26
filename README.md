@@ -1,3 +1,6 @@
+This is purely a mock-up for a school project primarily as excuse to try out RippleJS.
+It has minor functionality and is fully hardcoded in Dutch.
+
 ## Getting Started
 
 1. Install dependencies:
